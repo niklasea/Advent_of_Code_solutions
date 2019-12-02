@@ -28,19 +28,20 @@ fn main() {
 	let content_array: Vec<i32> = content_string.trim().split(',').map(|s| s.parse::<i32>().unwrap()).collect();
 
 	let part_one = execute_program(&content_array, 12, 2);
-	println!("Part 1 - The restored 1202 gravity assist program has a value of {} in position 0 when it halts", part_one);
+	println!("Part 1 - The restored 1202 gravity assist program produces a value of {} in position 0", part_one);
 
 	let mut part_two = None;
-	for noun in 0..99 {
+	'outer: for noun in 0..99 {
 		for verb in 0..99 {
 			if execute_program(&content_array, noun, verb) == OUTPUT {
 				part_two = Some(100 * noun + verb);
+				break 'outer;
 			}
 		}
 	}
 	match part_two {
-		Some(result) => println!("Part 2 - The {} program produces an output of {}", result, OUTPUT),
-		None => println!("Part 2 - The program did not produce the correct output ({}) for any valid combination of noun and verb", OUTPUT),
+		Some(result) => println!("Part 2 - The {} program produces the desired output of {} in position 0", result, OUTPUT),
+		None => println!("Part 2 - The program did not produce the desired output ({}) for any valid combination of noun and verb", OUTPUT),
 	}
 }
 
@@ -55,12 +56,12 @@ fn execute_program(intcode: &Vec<i32>, noun: i32, verb: i32) -> i32 {
 fn run_intcode(code: &mut Vec<i32>) {
 	let mut i = 0;
 	while code[i] != 99 {
-		let arg1 = code[i+1];
-		let arg2 = code[i+2];
-		let dest = code[i+3];
+		let arg1 = code[i+1] as usize;
+		let arg2 = code[i+2] as usize;
+		let dest = code[i+3] as usize;
 		match code[i] {
-			1 => code[dest as usize] = code[arg1 as usize] + code[arg2 as usize],
-			2 => code[dest as usize] = code[arg1 as usize] * code[arg2 as usize],
+			1 => code[dest] = code[arg1] + code[arg2],
+			2 => code[dest] = code[arg1] * code[arg2],
 			_ => panic!("Invalid opcode at position {}: {}", i, code[i]),
 		}
 		i += 4;
