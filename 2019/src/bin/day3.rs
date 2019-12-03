@@ -1,7 +1,9 @@
 // Advent of Code 2019 - day 3
 // https://adventofcode.com/2019/day/3
 
-// Takes a text file with comma-separated instructions as input
+// Takes as input either
+// 1. a text file with two comma-separated wire paths on separate lines 
+// 2. two comma-separated wire paths
 
 #[derive(Copy, Clone, Debug)]
 struct Point {
@@ -18,8 +20,17 @@ impl std::fmt::Display for Point {
 
 fn main() {
 	let args: Vec<String> = std::env::args().collect();
-	let file = match args.len() {
-		2 => &args[1],
+	let file_string = match args.len() {
+		3 => {
+			args[1].to_string() + "\n" + &args[2]
+		},
+		2 => {
+			let path = std::path::Path::new(&args[1]);
+			match std::fs::read_to_string(path) {
+				Err(why) => panic!("Could not read {}: {}", path.display(), std::error::Error::description(&why)),
+				Ok(string) => string,
+			}
+		},
 		1 => {
 			eprintln!("ERROR: No input file specified");
 			return;
@@ -29,12 +40,8 @@ fn main() {
 			return;
 		},
 	};
-	let path = std::path::Path::new(file);
-	let file_string = match std::fs::read_to_string(path) {
-		Err(why) => panic!("Could not read {}: {}", path.display(), std::error::Error::description(&why)),
-		Ok(string) => string,
-	};
 
+	println!("{}", file_string);
 	let mut wires = Vec::new();
 	for line in file_string.lines() {
 		// Trim whitespace, split on commas, parse and put the result in a vector
@@ -72,12 +79,15 @@ fn main() {
 		}
 	}
 	println!("Part 1 - The intersection closest to the central port is at {}, at a distance of {}", closest, closest.x.abs() + closest.y.abs());
-	println!("Part 2 - The intersection fewest steps from the central port is at {}, at {} steps combined", fewest, fewest.steps);
+	println!("Part 2 - The intersection fewest steps from the central port is at {}", fewest);
 }
 
 fn parse_instruction(instruction: String) -> Point {
 	let (direction, length_str) = instruction.split_at(1);
-	let length = length_str.parse::<i32>().unwrap();
+	let length = match length_str.parse::<i32>() {
+		Err(why) => panic!("Unable to parse number \"{}\", {}", length_str, std::error::Error::description(&why)),
+		Ok(n) => n,
+	};
 	match direction {
 		"R" => Point { x: length, y: 0, steps: length},
 		"D" => Point { x: 0, y: -length, steps: length },
