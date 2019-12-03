@@ -31,8 +31,8 @@ fn main() {
 	println!("Part 1 - The restored 1202 gravity assist program produces a value of {} in position 0", part_one);
 
 	let mut part_two = None;
-	'outer: for noun in 0..99 {
-		for verb in 0..99 {
+	'outer: for noun in 0..=99 {
+		for verb in 0..=99 {
 			if execute_program(&content_array, noun, verb) == OUTPUT {
 				part_two = Some(100 * noun + verb);
 				break 'outer;
