@@ -3,6 +3,8 @@
 
 // Takes a text file with comma-separated integers as input
 
+mod intcode_computer;
+
 const OUTPUT: i32 = 19690720;
 
 fn main() {
@@ -49,21 +51,9 @@ fn execute_program(intcode: &Vec<i32>, noun: i32, verb: i32) -> i32 {
 	let program = &mut intcode.to_vec();
 	program[1] = noun;
 	program[2] = verb;
-	run_intcode(program);
-	program[0]
-}
-
-fn run_intcode(code: &mut Vec<i32>) {
-	let mut i = 0;
-	while code[i] != 99 {
-		let arg1 = code[i+1] as usize;
-		let arg2 = code[i+2] as usize;
-		let dest = code[i+3] as usize;
-		match code[i] {
-			1 => code[dest] = code[arg1] + code[arg2],
-			2 => code[dest] = code[arg1] * code[arg2],
-			_ => panic!("Invalid opcode at position {}: {}", i, code[i]),
-		}
-		i += 4;
+	if let Some(res) = intcode_computer::run_intcode(program, 0) {
+		res
+	} else {
+		program[0]
 	}
 }

@@ -3,8 +3,11 @@
 
 // Takes as input a text file with a comma-separated intcode
 
+mod intcode_computer;
+
 fn main() {
 	let args: Vec<String> = std::env::args().collect();
+	// TODO: Use '-f' for file input or '-' for standard input?
 	let intcode_string = match args.len() {
 		2 => {
 			let path = std::path::Path::new(&args[1]);
@@ -37,74 +40,9 @@ fn main() {
 
 fn execute_program(intcode: &Vec<i32>, input: i32) -> i32 {
 	let program = &mut intcode.to_vec();
-	run_intcode(program, input)
-}
-
-fn run_intcode(code: &mut Vec<i32>, input: i32) -> i32 {
-	let mut output = 0;
-	let mut i = 0;
-	while code[i] != 99 {
-		let opcode = code[i] % 100;
-		let parmode1 = (code[i] / 100) % 10;
-		let parmode2 = (code[i] / 1000) % 10;
-		let parmode3 = (code[i] / 10000) % 10;
-		// println!("Instruction: {}, parameter mode ({}, {}, {})", code[i], parmode1, parmode2, parmode3);
-		let argindex1 = match parmode1 {
-			0 => code[i+1] as usize,
-			1 => i+1,
-			err => panic!("Invalid parameter mode ({}) in: {}", err, code[i]),
-		};
-		let argindex2 = match parmode2 {
-			0 => code[i+2] as usize,
-			1 => i+2,
-			err => panic!("Invalid parameter mode ({}) in: {}", err, code[i]),
-		};
-		let argindex3 = match parmode3 {
-			0 => code[i+3] as usize,
-			err => panic!("Invalid parameter mode ({}) in: {}", err, code[i]),
-		};
-		match opcode {
-			1 => {
-				code[argindex3] = code[argindex1] + code[argindex2];
-				i += 4;
-			},
-			2 => {
-				code[argindex3] = code[argindex1] * code[argindex2];
-				i += 4;
-			},
-			3 => {
-				code[argindex1] = input;
-				i += 2;
-			},
-			4 => {
-				output = code[argindex1];
-				println!("{}", output);
-				i += 2;
-			},
-			5 => {
-				if code[argindex1] != 0 {
-					i = code[argindex2] as usize;
-				} else {
-					i += 3;
-				}
-			},
-			6 => {
-				if code[argindex1] == 0 {
-					i = code[argindex2] as usize;
-				} else {
-					i += 3;
-				}
-			},
-			7 => {
-				code[argindex3] = (code[argindex1] < code[argindex2]) as i32;
-				i += 4;
-			},
-			8 => {
-				code[argindex3] = (code[argindex1] == code[argindex2]) as i32;
-				i += 4;
-			},
-			_ => panic!("Invalid opcode at position {}: {}", i, code[i]),
-		}
+	if let Some(res) = intcode_computer::run_intcode(program, input) {
+		res
+	} else {
+		program[0]
 	}
-	output
 }
