@@ -7,7 +7,6 @@ use aoc2019::intcode_computer;
 
 fn main() {
 	let args: Vec<String> = std::env::args().collect();
-	// TODO: Use '-f' for file input or '-' for standard input?
 	let intcode_string = match args.len() {
 		2 => {
 			let path = std::path::Path::new(&args[1]);
