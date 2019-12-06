@@ -30,7 +30,7 @@ fn main() {
 	let content_array: Vec<i32> = content_string.trim().split(',').map(|s| s.parse::<i32>().unwrap()).collect();
 
 	let part_one = execute_program(&content_array, 12, 2);
-	println!("Part 1 - The restored 1202 gravity assist program produces a value of {} in position 0", part_one);
+	println!("Part 1 - The restored 1202 gravity assist program produces a value of {}", part_one);
 
 	let mut part_two = None;
 	'outer: for noun in 0..=99 {
@@ -42,7 +42,7 @@ fn main() {
 		}
 	}
 	match part_two {
-		Some(result) => println!("Part 2 - The {} program produces the desired output of {} in position 0", result, OUTPUT),
+		Some(result) => println!("Part 2 - The {} program produces the desired output of {}", result, OUTPUT),
 		None => println!("Part 2 - The program did not produce the desired output ({}) for any valid combination of noun and verb", OUTPUT),
 	}
 }
