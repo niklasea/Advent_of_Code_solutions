@@ -3,7 +3,7 @@
 
 // Takes as input a text file with a comma-separated intcode
 
-mod intcode_computer;
+use aoc2019::intcode_computer;
 
 fn main() {
 	let args: Vec<String> = std::env::args().collect();

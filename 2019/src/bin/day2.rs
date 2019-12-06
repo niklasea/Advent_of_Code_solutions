@@ -3,7 +3,7 @@
 
 // Takes a text file with comma-separated integers as input
 
-mod intcode_computer;
+use aoc2019::intcode_computer;
 
 const OUTPUT: i32 = 19690720;
 
