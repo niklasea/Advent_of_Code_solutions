@@ -122,6 +122,7 @@ fn manhattan_distance(start: Point, end: Point) -> i32 {
 
 // Uses the algorithm from Wikipedia
 // https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line
+// TODO: Make this method more generic
 fn find_intersection(p_start: Point, p_end: Point, q_start: Point, q_end: Point) -> Option<Point> {
 	let Point{ x: x1, y: y1, .. } = p_start;
 	let Point{ x: x2, y: y2, .. } = p_end;

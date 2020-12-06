@@ -1,6 +1,10 @@
-pub fn run_intcode(code: &mut Vec<i32>, input: i32) -> Option<i32> {
+// Returns a pointer to the current index and the latest output if available
+// TODO: Return a named struct?
+// TODO: Return a "halted" flag?
+pub fn run_intcode(code: &mut Vec<i32>, inputs: &mut Vec<i32>, start_index: usize) -> (usize, Option<i32>) {
+	let mut i = start_index;
 	let mut output = None;
-	let mut i = 0;
+	let mut input_iter = inputs.iter_mut();
 	while code[i] != 99 {
 		let opcode = code[i] % 100;
 
@@ -22,14 +26,20 @@ pub fn run_intcode(code: &mut Vec<i32>, input: i32) -> Option<i32> {
 				i += 4;
 			},
 			(3, Some(arg1), _, _) => {
-				code[arg1] = input;
+				match input_iter.next() {
+					Some(input) => code[arg1] = *input,
+					None => {
+						println!("Waiting for input at {}", i);
+						break;
+					},
+				};
 				i += 2;
 			},
 			(4, Some(arg1), _, _) => {
 				output = Some(code[arg1]);
-				if let Some(o) = output {
-					println!("{}", o);
-				}
+				// if let Some(o) = output {
+				// 	println!("Diagnostic test output: {}", o);
+				// }
 				i += 2;
 			},
 			(5, Some(arg1), Some(arg2), _) => {
@@ -58,7 +68,7 @@ pub fn run_intcode(code: &mut Vec<i32>, input: i32) -> Option<i32> {
 			_ => panic!("Probably (lol) not enough arguments for opcode {:?} at position {}: {:?}{:?}{:?}", code[i], i, arg_index1, arg_index2, arg_index3),
 		}
 	}
-	output
+	(i, output)
 }
 
 fn get_argument_index(code: &Vec<i32>, index: usize, param_mode: i32) -> Option<usize> {

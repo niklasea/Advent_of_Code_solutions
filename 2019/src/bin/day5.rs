@@ -39,7 +39,7 @@ fn main() {
 
 fn execute_program(intcode: &Vec<i32>, input: i32) -> i32 {
 	let program = &mut intcode.to_vec();
-	if let Some(res) = intcode_computer::run_intcode(program, input) {
+	if let (_, Some(res)) = intcode_computer::run_intcode(program, &mut vec![input], 0) {
 		res
 	} else {
 		program[0]

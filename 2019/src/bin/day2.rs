@@ -51,7 +51,7 @@ fn execute_program(intcode: &Vec<i32>, noun: i32, verb: i32) -> i32 {
 	let program = &mut intcode.to_vec();
 	program[1] = noun;
 	program[2] = verb;
-	if let Some(res) = intcode_computer::run_intcode(program, 0) {
+	if let (_, Some(res)) = intcode_computer::run_intcode(program, &mut vec![], 0) {
 		res
 	} else {
 		program[0]
