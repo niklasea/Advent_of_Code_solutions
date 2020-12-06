@@ -18,12 +18,25 @@ fn main() {
                 .collect())
         .collect();
 
-    let mut trees = 0;
-    for (index, row) in map.iter().enumerate() {
-        let column = (index * 3) % row.len();
-        if row[column] == Square::Tree {
-            trees += 1;
-        }
-    }
-    println!("There are {} trees on the way down the 3,1 slope.", trees);
+    println!("There are {} trees on the way down the 3,1 slope.", count_trees(&map, 3, 1));
+
+    let all_slopes_multiplied = count_trees(&map, 1, 1)
+        * count_trees(&map, 3, 1)
+        * count_trees(&map, 5, 1)
+        * count_trees(&map, 7, 1)
+        * count_trees(&map, 1, 2);
+    println!("The product of all trees on all slopes is {}.", all_slopes_multiplied);
+}
+
+fn count_trees(map: &Vec<Vec<Square>>, move_right: usize, move_down: usize) -> u64 {
+    map.iter()
+        .enumerate()
+        .filter(|(row_index, _)| row_index % move_down == 0 )
+        .fold(0, |trees, (index, row)| {
+            let column = (index * move_right) % row.len();
+            trees + match row[column] {
+                Square::Tree => 1,
+                _ => 0,
+            }
+        })
 }
