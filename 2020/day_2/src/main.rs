@@ -50,6 +50,7 @@ fn valid_password_old(password: String, policy: &Policy) -> bool {
 
 fn valid_password_new(password: String, policy: &Policy) -> bool {
     let chars: Vec<char> = password.chars().collect();
+    // Potential index out of range
     match (chars[policy.min - 1] == policy.letter, chars[policy.max - 1] == policy.letter) {
         (true, false) => true,
         (false, true) => true,
