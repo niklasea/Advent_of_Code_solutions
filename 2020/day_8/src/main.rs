@@ -29,18 +29,44 @@ fn main() {
         })
         .collect();
     
+    match run_program(&instructions) {
+        Ok(_) => eprintln!("The original program should loop infinitely."),
+        Err(acc) => println!("The accumulator value is {} right before the loop.", acc),
+    }
+
+    for i in 0..instructions.len() {
+        let mut modified_instructions = instructions.clone();
+        modified_instructions[i].operation = match instructions[i].operation {
+            Operation::Nop => Operation::Jmp,
+            Operation::Jmp => Operation::Nop,
+            _ => continue,
+        };
+        match run_program(&modified_instructions) {
+            Ok(res) => {
+                println!("After fixing the program, the result is {}.", res);
+                break;
+            },
+            Err(_) => (),
+        }
+    }
+}
+
+fn run_program(instructions: &Vec<Instruction>) -> Result<i64, i64> {
     let mut visited = HashSet::new();
     let mut accumulator = 0;
-    let mut pointer: i64 = 0;
+    let mut pointer = 0;
     while visited.insert(pointer) {
+        if pointer == instructions.len() {
+            return Ok(accumulator);
+        }
         match (instructions[pointer as usize].operation, instructions[pointer as usize].argument) {
             (Operation::Acc, arg) => {
                 accumulator += arg;
                 pointer += 1
             },
-            (Operation::Jmp, arg) => pointer += arg,
+            (Operation::Jmp, arg) => pointer = (pointer as i64 + arg) as usize,
             (Operation::Nop, _) => pointer += 1,
         }
     }
-    println!("The accumulator value is {} right before the loop.", accumulator);
+    Err(accumulator)
 }
